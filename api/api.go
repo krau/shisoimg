@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/krau/shisoimg/config"
 	"github.com/krau/shisoimg/utils"
@@ -20,6 +21,13 @@ func Serve(cmd *cobra.Command, args []string) {
 		addr = cmdHost.Value.String()
 	}
 	utils.L.Infof("Listening on %s", addr)
+
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowCredentials = true
+	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Authorization")
+	corsConfig.AllowAllOrigins = true
+
+	r.Use(cors.New(corsConfig))
 
 	registerRoutes(r)
 
