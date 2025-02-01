@@ -39,14 +39,20 @@ func CreateImagesFromDir(rootPath string) (int, error) {
 		if err != nil {
 			return err
 		}
-
+		width, height, err := utils.GetImageSize(path)
+		if err != nil {
+			width = 0
+			height = 0
+		}
 		img := Image{
-			Path: path,
-			Md5:  md5,
+			Path:   path,
+			Md5:    md5,
+			Width:  width,
+			Height: height,
 		}
 		count++
 		if err := db.Where("md5 = ?", md5).First(&Image{}).Error; err == nil {
-			return db.Model(&Image{}).Where("md5 = ?", md5).Update("path", path).Error
+			return db.Model(&Image{}).Where("md5 = ?", md5).Updates(&img).Error
 		}
 		return db.Create(&img).Error
 	})

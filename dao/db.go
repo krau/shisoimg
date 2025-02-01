@@ -21,6 +21,7 @@ func Init() {
 	}
 	var err error
 	db, err = gorm.Open(gormlite.Open("data/shisoimg.db"), &gorm.Config{
+		Logger:      nil,
 		PrepareStmt: true,
 	})
 	if err != nil {
@@ -45,8 +46,10 @@ func Rules() []UrlRule {
 
 type Image struct {
 	gorm.Model
-	Path string
-	Md5  string `gorm:"unique"`
+	Path   string
+	Md5    string `gorm:"unique"`
+	Width  int
+	Height int
 }
 
 type UrlRule struct {
