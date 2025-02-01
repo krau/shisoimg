@@ -68,4 +68,5 @@ require (
 	github.com/ncruces/go-sqlite3/gormlite v0.22.0
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.19.0
+	go.mongodb.org/mongo-driver v1.17.2
 )

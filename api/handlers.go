@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/krau/shisoimg/dao"
@@ -44,4 +45,50 @@ func getImage(c *gin.Context) {
 		c.Redirect(302, newUrl)
 	}
 	c.File(image.Path)
+}
+
+func v1RandomArtworks(c *gin.Context) {
+	var request GetRandomArtworksRequest
+	if err := c.ShouldBind(&request); err != nil {
+		GinBindError(c, err)
+		return
+	}
+	images, err := dao.GetImageListRandom(request.Limit)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			GinErrorResponse(c, http.StatusNotFound, "Artworks not found")
+			return
+		}
+		utils.L.Errorf("Failed to get random artworks: %v", err)
+		GinErrorResponse(c, http.StatusInternalServerError, "Failed to get random artworks")
+		return
+	}
+	if len(images) == 0 {
+		GinErrorResponse(c, http.StatusNotFound, "Artworks not found")
+		return
+	}
+	c.JSON(200, ResponseFromImages(images))
+}
+
+func v1ListArtworks(c *gin.Context) {
+	var request GetArtworkListRequest
+	if err := c.ShouldBind(&request); err != nil {
+		GinBindError(c, err)
+		return
+	}
+	images, err := dao.GetImageList(request.Page, request.PageSize)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			GinErrorResponse(c, http.StatusNotFound, "Artworks not found")
+			return
+		}
+		utils.L.Errorf("Failed to get random artworks: %v", err)
+		GinErrorResponse(c, http.StatusInternalServerError, "Failed to get random artworks")
+		return
+	}
+	if len(images) == 0 {
+		GinErrorResponse(c, http.StatusNotFound, "Artworks not found")
+		return
+	}
+	c.JSON(200, ResponseFromImages(images))
 }

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -34,4 +35,12 @@ func registerRoutes(r *gin.Engine) {
 	})
 	r.GET("/random", randomImage)
 	r.GET("/images/:md5", getImage)
+
+	v1 := r.Group("/v1")
+	artworkGroup := v1.Group("/artwork")
+	{
+		artworkGroup.Match([]string{http.MethodGet, http.MethodPost}, "/random", v1RandomArtworks)
+		artworkGroup.Match([]string{http.MethodGet, http.MethodPost}, "/random/preview", randomImage)
+		artworkGroup.Match([]string{http.MethodGet, http.MethodPost}, "/list", v1ListArtworks)
+	}
 }

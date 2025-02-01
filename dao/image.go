@@ -59,9 +59,9 @@ func GetImageList(page, pageSize int) ([]Image, error) {
 	return images, err
 }
 
-func GetImageListRandom(pageSize int) ([]Image, error) {
+func GetImageListRandom(limit int) ([]Image, error) {
 	var images []Image
-	err := db.Limit(pageSize).Order("RANDOM()").Find(&images).Error
+	err := db.Limit(limit).Order("RANDOM()").Find(&images).Error
 	return images, err
 }
 
