@@ -12,7 +12,7 @@ func init() {
 	if L != nil {
 		return
 	}
-	slog.DefaultChannelName = "SaveAnyBot"
+	slog.DefaultChannelName = "ShisoImg"
 	L = slog.New()
 	logLevel := slog.LevelByName("DEBUG")
 	logFilePath := "logs/shisoimg.log"
