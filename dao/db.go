@@ -2,11 +2,13 @@ package dao
 
 import (
 	"os"
+	"time"
 
 	"github.com/krau/shisoimg/utils"
 	_ "github.com/ncruces/go-sqlite3/embed"
 	"github.com/ncruces/go-sqlite3/gormlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var db *gorm.DB
@@ -21,7 +23,7 @@ func Init() {
 	}
 	var err error
 	db, err = gorm.Open(gormlite.Open("data/shisoimg.db"), &gorm.Config{
-		Logger:      nil,
+		Logger:      logger.New(utils.L, logger.Config{Colorful: true, SlowThreshold: time.Second * 5, LogLevel: logger.Error, IgnoreRecordNotFoundError: true, ParameterizedQueries: true}),
 		PrepareStmt: true,
 	})
 	if err != nil {
@@ -29,19 +31,22 @@ func Init() {
 		os.Exit(1)
 	}
 	db.AutoMigrate(&Image{}, &UrlRule{})
+	Rules()
 }
 
 var urlRules = []UrlRule{}
 
 func Rules() []UrlRule {
-	if urlRules != nil {
+	if len(urlRules) > 0 {
 		return urlRules
 	}
 	rules, err := GetRules()
-	if err == nil {
-		urlRules = rules
+	if err != nil {
+		utils.L.Errorf("Failed to get rules: %v", err)
+		return urlRules
 	}
-	return urlRules
+	urlRules = rules
+	return rules
 }
 
 type Image struct {
