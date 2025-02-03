@@ -57,6 +57,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           ldflags: >-
             -s -w
+            -X "github.com/krau/shisoimg/cmd.Version=${{ env.VERSION }}"
           binary_name: shiroimg
         env:
           VERSION: ${{ env.VERSION }}
