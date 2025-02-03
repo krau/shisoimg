@@ -30,3 +30,17 @@ var upgradeCmd = &cobra.Command{
 		}
 	},
 }
+
+var versionCmd = &cobra.Command{
+	Use:     "version",
+	Short:   "Print the version number of shisoimg",
+	Aliases: []string{"v"},
+	Run: func(cmd *cobra.Command, args []string) {
+		log.Println("shisoimg version:", Version)
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(upgradeCmd)
+	rootCmd.AddCommand(versionCmd)
+}
