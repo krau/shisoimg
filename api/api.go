@@ -50,5 +50,6 @@ func registerRoutes(r *gin.Engine) {
 		artworkGroup.Match([]string{http.MethodGet, http.MethodPost}, "/random", v1RandomArtworks)
 		artworkGroup.Match([]string{http.MethodGet, http.MethodPost}, "/random/preview", randomImage)
 		artworkGroup.Match([]string{http.MethodGet, http.MethodPost}, "/list", v1ListArtworks)
+		artworkGroup.GET("/:id", v1GetArtwork)
 	}
 }

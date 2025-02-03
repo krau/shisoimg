@@ -3,6 +3,8 @@ package api
 import (
 	"net/http"
 	"net/url"
+	"path"
+	"regexp"
 	"strings"
 	"time"
 
@@ -10,6 +12,10 @@ import (
 	"github.com/krau/shisoimg/dao"
 	"github.com/krau/shisoimg/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+var (
+	md5Pattern = regexp.MustCompile(`^[a-f0-9]{32}$`)
 )
 
 func applyRules(path string) (match bool, newUrl string) {
@@ -98,13 +104,12 @@ var fakeArtist = &Artist{
 }
 
 func ResponseDataFromImage(image dao.Image) *Artwork {
-	artworkID := primitive.NewObjectID().Hex()
 	match, newUrl := applyRules(image.Path)
 	if !match {
 		newUrl = "/images/" + image.Md5
 	}
 	return &Artwork{
-		ID:         artworkID,
+		ID:         image.Md5,
 		Artist:     fakeArtist,
 		Title:      image.Md5,
 		Tags:       []string{},
@@ -113,14 +118,14 @@ func ResponseDataFromImage(image dao.Image) *Artwork {
 		CreatedAt:  image.CreatedAt,
 		Pictures: []*PictureResponse{
 			{
-				ID:        primitive.NewObjectID().Hex(),
+				ID:        image.Md5,
 				Index:     0,
 				Thumbnail: newUrl,
 				Regular:   newUrl,
 				Width:     uint(image.Width),
 				Height:    uint(image.Height),
 				Hash:      image.Md5,
-				FileName:  image.Md5,
+				FileName:  path.Base(image.Path),
 				MessageID: 0,
 			},
 		},

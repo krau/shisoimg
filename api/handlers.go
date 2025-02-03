@@ -92,3 +92,25 @@ func v1ListArtworks(c *gin.Context) {
 	}
 	c.JSON(200, ResponseFromImages(images))
 }
+
+func v1GetArtwork(c *gin.Context) {
+	md5 := c.Param("id")
+	if len(md5) != 32 || !md5Pattern.MatchString(md5) {
+		GinErrorResponse(c, http.StatusBadRequest, "Invalid artwork ID")
+		return
+	}
+	image, err := dao.GetImageByMd5(md5)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			GinErrorResponse(c, http.StatusNotFound, "Artwork not found")
+			return
+		}
+		GinErrorResponse(c, http.StatusInternalServerError, "Failed to get artwork")
+		return
+	}
+	c.JSON(200, &RestfulCommonResponse[*Artwork]{
+		Status:  200,
+		Message: "Success",
+		Data:    ResponseDataFromImage(*image),
+	})
+}
